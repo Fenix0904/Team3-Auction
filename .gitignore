@@ -1,5 +1,14 @@
-target/
-!.mvn/wrapper/maven-wrapper.jar
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+target
 
 ### STS ###
 .apt_generated
