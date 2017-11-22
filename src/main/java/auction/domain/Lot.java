@@ -26,43 +26,32 @@ public class Lot {
     @OneToMany(mappedBy = "lot")
     private List<Photo> photos;
 
-    public int getId() {
-        return id;
-    }
+    @OneToMany(mappedBy = "lot")
+    private List<Bid> bids;
 
-    public int getInitialPrice() {
-        return initialPrice;
-    }
+    public int getId() { return id; }
 
-    public void setInitialPrice(int initialPrice) {
-        this.initialPrice = initialPrice;
-    }
+    public int getInitialPrice() { return initialPrice; }
 
-    public int getLotQuantity() {
-        return lotQuantity;
-    }
+    public void setInitialPrice(int initialPrice) { this.initialPrice = initialPrice; }
 
-    public void setLotQuantity(int lotQuantity) {
-        this.lotQuantity = lotQuantity;
-    }
+    public int getLotQuantity() { return lotQuantity; }
 
-    public String getDescription() {
-        return description;
-    }
+    public void setLotQuantity(int lotQuantity) { this.lotQuantity = lotQuantity; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
 
-    public Auction getAuction() {
-        return auction;
-    }
+    public void setDescription(String description) { this.description = description; }
 
-    public List<Photo> getPhotos() {
-        return photos;
-    }
+    public List<Photo> getPhotos() { return photos; }
 
-    public void setPhotos(List<Photo> photos) {
-        this.photos = photos;
-    }
+    public void setPhotos(List<Photo> photos) { this.photos = photos; }
+
+    public Auction getAuction() { return auction; }
+
+    public void setAuction(Auction auction) { this.auction = auction; }
+
+    public List<Bid> getBids() { return bids; }
+
+    public void setBids(List<Bid> bids) { this.bids = bids; }
 }
