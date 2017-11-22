@@ -10,18 +10,18 @@ public class Bid {
     private int id;
 
     @Column(name = "bid_value")
-    int bidValue;
+    private int bidValue;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "lot_id")
-    Lot lot;
+    private Lot lot;
 
     @Column(name = "bid_time")
-    Date bidTime;
+    private Date bidTime;
 
     public int getId() { return id; }
 
