@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "auction")
 public class Auction {
@@ -24,17 +25,20 @@ public class Auction {
     @Column(name = "bid_step")
     private int bidStep;
 
-    /**
-     * Id of user, who created auction.
-     */
-    @OneToOne(targetEntity = User.class)
-    private int user;
+    @OneToOne
+    private User trader;
 
     @OneToOne
     private Category category;
 
     @OneToMany(mappedBy = "auction")
     private List<Lot> lots;
+
+    @ManyToMany
+    @JoinTable(name = "auction_subscribers",
+            joinColumns = @JoinColumn(name = "auction_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> subscribers;
 
     public int getId() {
         return id;
@@ -72,12 +76,12 @@ public class Auction {
         this.bidStep = bidStep;
     }
 
-    public int getTraiderId() {
-        return user;
+    public User getTraiderId() {
+        return trader;
     }
 
-    public void setTraiderId(int traiderId) {
-        this.user = traiderId;
+    public void setTraiderId(User user) {
+        this.trader = user;
     }
 
     public Category getCategory() {
@@ -95,4 +99,5 @@ public class Auction {
     public void setLots(List<Lot> lots) {
         this.lots = lots;
     }
+
 }

@@ -2,6 +2,7 @@ package auction.domain;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "user")
 public class User {
@@ -24,6 +25,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Bid> bids;
+
+    @ManyToMany(mappedBy = "subscribers")
+    private Set<Auction> auctions;
 
     public User() {
     }

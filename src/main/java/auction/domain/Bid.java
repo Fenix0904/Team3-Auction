@@ -40,4 +40,22 @@ public class Bid {
     public Date getBidTime() { return bidTime; }
 
     public void setBidTime(Date bidTime) { this.bidTime = bidTime; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Bid bid = (Bid) o;
+
+        if (bidValue != bid.bidValue) return false;
+        return bidTime != null ? bidTime.equals(bid.bidTime) : bid.bidTime == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = bidValue;
+        result = 31 * result + (bidTime != null ? bidTime.hashCode() : 0);
+        return result;
+    }
 }

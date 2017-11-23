@@ -22,7 +22,22 @@ public class AuctionStatus {
         return id;
     }
 
-    public String getStatusName() {
+    public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AuctionStatus status = (AuctionStatus) o;
+
+        return name.equals(status.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

@@ -10,6 +10,11 @@ INSERT INTO user VALUES (1,
                          'Fenix0904',
                          1);
 
+INSERT INTO category VALUES (1, 'Техніка');
+
 INSERT INTO status VALUES (1, 'PLANNED');
 INSERT INTO status VALUES (2, 'OPEN');
 INSERT INTO status VALUES (3, 'CLOSED');
+
+INSERT INTO auction VALUES (1, 100, '2020-12-12', '2020-12-12', 1, 1, 1);
+
