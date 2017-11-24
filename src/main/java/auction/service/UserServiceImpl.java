@@ -1,73 +1,52 @@
 package auction.service;
 
-import auction.domain.Auction;
-import auction.domain.AuctionStatus;
-import auction.domain.Lot;
-import auction.repository.AuctionRepository;
-import auction.repository.AuctionStatusRepository;
+
+import auction.domain.Role;
+import auction.domain.User;
+import auction.repository.RoleRepository;
+import auction.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private Map<Auction, Integer> cache = new ConcurrentHashMap<>();
-
-    private final AuctionRepository auctionRepository;
-    private final AuctionStatusRepository auctionStatusRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder encoder;
 
     @Autowired
-    public UserServiceImpl(AuctionRepository auctionRepository,
-                           AuctionStatusRepository auctionStatusRepository) {
-        this.auctionRepository = auctionRepository;
-        this.auctionStatusRepository = auctionStatusRepository;
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.encoder = encoder;
     }
 
     @Override
-    public void createAuction(Auction auction) {
-        auctionRepository.save(auction);
+    public void createUser(User user) {
+        user.setPassword(encoder.encode(user.getPassword()));
+        Role role = roleRepository.getOne(1);
+        user.setRole(role);
+        userRepository.save(user);
     }
 
     @Override
-    public void updateAuction(Auction auction) {
-        auctionRepository.save(auction);
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Override
-    public void deleteAuction(int auctionId) {
-        auctionRepository.delete(auctionId);
+    public User findById(int id) {
+        return userRepository.findById(id);
     }
 
     @Override
-    public void changeAuctionStatus(int statusId, int auctionId) {
-        Auction temp = auctionRepository.findOne(auctionId);
-        AuctionStatus status = auctionStatusRepository.findOne(statusId);
-        temp.setAuctionStatus(status);
-        auctionRepository.save(temp);
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
-    @Override
-    public List<Auction> getAllAuctions() {
-        return auctionRepository.findAll();
-    }
-
-    @Override
-    public void createLot(Lot lot) {
-
-    }
-
-    @Override
-    public void updateLot(Lot lot) {
-
-    }
-
-    @Override
-    public void makeBid(Auction auction, Lot lot) {
-        //TODO
-    }
-
-
 }

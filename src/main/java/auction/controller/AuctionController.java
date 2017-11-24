@@ -1,8 +1,9 @@
 package auction.controller;
 
 import auction.domain.Auction;
-import auction.service.UserService;
+import auction.service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,20 +12,23 @@ import java.util.List;
 public class AuctionController {
 
 
-    private final UserService userService;
+    private final AuctionService auctionService;
 
     @Autowired
-    public AuctionController(UserService userService) {
-        this.userService = userService;
+    public AuctionController(AuctionService auctionService) {
+        this.auctionService = auctionService;
     }
 
+
     @PostMapping(value = "/create")
+    @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public void createAuction(@RequestBody Auction auction) {
-        userService.createAuction(auction);
+        auctionService.createAuction(auction);
     }
 
     @GetMapping(value = "/{auctionId}/{lotId}/makeBid")
+    @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public List<Auction> getAllAuctions(@PathVariable int auctionId, @PathVariable int lotId ) {
-        return userService.getAllAuctions();
+        return auctionService.getAllAuctions();
     }
 }

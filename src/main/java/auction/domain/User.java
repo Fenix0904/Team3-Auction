@@ -17,6 +17,9 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @Transient
+    private String confirmPassword;
+
     @OneToOne
     private Role role;
 
@@ -79,5 +82,13 @@ public class User {
 
     public void setBids(List<Bid> bids) {
         this.bids = bids;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 }

@@ -1,26 +1,15 @@
 package auction.service;
 
-import auction.domain.Auction;
-import auction.domain.Category;
-import auction.domain.Lot;
-
+import auction.domain.User;
 import java.util.List;
 
 public interface UserService {
 
-    void createAuction(Auction auction);
+    void createUser(User user);
 
-    void updateAuction(Auction auction);
+    User findByUsername(String username);
 
-    void deleteAuction(int auctionId);
+    User findById(int id);
 
-    void changeAuctionStatus(int statusId, int auctionId);
-
-    List<Auction> getAllAuctions();
-
-    void createLot(Lot lot);
-
-    void updateLot(Lot lot);
-
-    void makeBid(Auction auction, Lot lot);
+    List<User> getAllUsers();
 }
