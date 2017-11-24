@@ -55,6 +55,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void createLot(Lot lot) {
+
+    }
+
+    @Override
+    public void updateLot(Lot lot) {
+
+    }
+
+    @Override
     public void makeBid(Auction auction, Lot lot) {
         //TODO
     }

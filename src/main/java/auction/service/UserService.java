@@ -18,7 +18,9 @@ public interface UserService {
 
     List<Auction> getAllAuctions();
 
-    //void createLot(Lot lot);
+    void createLot(Lot lot);
+
+    void updateLot(Lot lot);
 
     void makeBid(Auction auction, Lot lot);
 }
