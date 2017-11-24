@@ -1,14 +1,12 @@
 package auction.service;
-
 import auction.domain.Lot;
-
 import java.util.List;
 
 public interface LotService {
 
-    void createLot();
+    void createLot(Lot lot);
 
-    void updateLot();
+    void updateLot(Lot lot);
 
     void deleteLot(int lotId);
 
