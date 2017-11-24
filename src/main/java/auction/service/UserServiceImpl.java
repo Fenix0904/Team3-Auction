@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateAuction(Auction auction) {
-        // TODO
+        auctionRepository.save(auction);
     }
 
     @Override
