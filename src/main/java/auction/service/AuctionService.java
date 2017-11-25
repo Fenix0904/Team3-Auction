@@ -1,9 +1,6 @@
 package auction.service;
 
 import auction.domain.Auction;
-import auction.domain.Category;
-import auction.domain.Lot;
-
 import java.util.List;
 
 public interface AuctionService {

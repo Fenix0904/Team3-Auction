@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
+@RequestMapping(value = "/user")
 public class UserController {
 
     private final UserService userService;
@@ -68,7 +69,7 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = "/all")
+    @GetMapping(value = "/getAll")
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     public List<UserDTO> getAllUsers() {
         return UserDTO.fromModel(userService.getAllUsers());

@@ -32,7 +32,7 @@ public class LotController {
         lotService.updateLot(lot);
     }
 
-    @PostMapping(value = "/delete/{id}")
+    @PostMapping(value = "/delete/{lotId}")
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     public void deleteLot(@PathVariable int lotId) {
         lotService.deleteLot(lotId);
