@@ -22,10 +22,8 @@ public class Auction {
     @Column(name = "termination_date")
     private Date terminationDate;
 
-    @Column(name = "bid_step")
-    private int bidStep;
-
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User trader;
 
     @OneToOne
@@ -34,11 +32,11 @@ public class Auction {
     @OneToMany(mappedBy = "auction")
     private List<Lot> lots;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "auction_subscribers",
             joinColumns = @JoinColumn(name = "auction_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> subscribers;
+    private List<User> subscribers;
 
     public int getId() {
         return id;
@@ -68,22 +66,6 @@ public class Auction {
         this.terminationDate = terminationDate;
     }
 
-    public int getBidStep() {
-        return bidStep;
-    }
-
-    public void setBidStep(int bidStep) {
-        this.bidStep = bidStep;
-    }
-
-    public User getTraiderId() {
-        return trader;
-    }
-
-    public void setTraiderId(User user) {
-        this.trader = user;
-    }
-
     public Category getCategory() {
         return category;
     }
@@ -100,4 +82,19 @@ public class Auction {
         this.lots = lots;
     }
 
+    public User getTrader() {
+        return trader;
+    }
+
+    public void setTrader(User trader) {
+        this.trader = trader;
+    }
+
+    public List<User> getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(List<User> subscribers) {
+        this.subscribers = subscribers;
+    }
 }

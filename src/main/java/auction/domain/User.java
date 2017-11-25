@@ -2,7 +2,6 @@ package auction.domain;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity(name = "user")
 public class User {
@@ -29,8 +28,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Bid> bids;
 
+    @OneToMany(mappedBy = "trader")
+    private List<Auction> auctions;
+
     @ManyToMany(mappedBy = "subscribers")
-    private Set<Auction> auctions;
+    private List<Auction> subscribedAuctions;
 
     public User() {
     }
@@ -90,5 +92,21 @@ public class User {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public List<Auction> getSubscribedAuctions() {
+        return subscribedAuctions;
+    }
+
+    public void setSubscribedAuctions(List<Auction> subscribedAuctions) {
+        this.subscribedAuctions = subscribedAuctions;
+    }
+
+    public List<Auction> getAuctions() {
+        return auctions;
+    }
+
+    public void setAuctions(List<Auction> auctions) {
+        this.auctions = auctions;
     }
 }

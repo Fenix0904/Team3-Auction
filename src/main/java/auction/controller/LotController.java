@@ -1,10 +1,12 @@
 package auction.controller;
 
 import auction.domain.Lot;
+import auction.dto.LotDTO;
 import auction.service.LotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -38,7 +40,7 @@ public class LotController {
 
     @GetMapping(value = "/getAll")
     @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    public List<Lot> getAllLots() {
-        return lotService.getAllLots();
+    public List<LotDTO> getAllLots() {
+        return LotDTO.fromModel(lotService.getAllLots());
     }
 }

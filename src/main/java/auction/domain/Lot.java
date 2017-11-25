@@ -1,5 +1,8 @@
 package auction.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -10,16 +13,22 @@ public class Lot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "initial_price")
     private int initialPrice;
 
     @Column(name = "lot_quantity")
     private int lotQuantity;
 
+    @Column(name = "bid_step")
+    private int bidStep;
+
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "auction_id")
     private Auction auction;
 
@@ -31,6 +40,14 @@ public class Lot {
 
     public int getId() { return id; }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public int getInitialPrice() { return initialPrice; }
 
     public void setInitialPrice(int initialPrice) { this.initialPrice = initialPrice; }
@@ -38,6 +55,14 @@ public class Lot {
     public int getLotQuantity() { return lotQuantity; }
 
     public void setLotQuantity(int lotQuantity) { this.lotQuantity = lotQuantity; }
+
+    public int getBidStep() {
+        return bidStep;
+    }
+
+    public void setBidStep(int bidStep) {
+        this.bidStep = bidStep;
+    }
 
     public String getDescription() { return description; }
 
