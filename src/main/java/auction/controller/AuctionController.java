@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping(value = "/auction")
 public class AuctionController {
 
 
@@ -26,9 +27,27 @@ public class AuctionController {
         auctionService.createAuction(auction);
     }
 
-    @GetMapping(value = "/{auctionId}/{lotId}/makeBid")
+    @PostMapping(value = "/update")
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    public void updateLot(@RequestBody Auction auction) {
+        auctionService.updateAuction(auction);
+    }
+
+    @PostMapping(value = "/delete/{auctionId}")
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    public void deleteLot(@PathVariable int auctionId) {
+        auctionService.deleteAuction(auctionId);
+    }
+
+    @PostMapping(value = "/changeStatus/{auctionId}/{statusId}")
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    public void changeStatus(@PathVariable int statusId, @PathVariable int auctionId) {
+        auctionService.changeAuctionStatus(statusId, auctionId);
+    }
+
+    @GetMapping(value = "/getAll")
     @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    public List<Auction> getAllAuctions(@PathVariable int auctionId, @PathVariable int lotId ) {
+    public List<Auction> getAllAuctions() {
         return auctionService.getAllAuctions();
     }
 }
