@@ -1,6 +1,7 @@
 package auction.controller;
 
 import auction.domain.User;
+import auction.dto.UserDTO;
 import auction.service.UserService;
 import auction.service.security.SecurityService;
 import auction.validator.UserLoginValidator;
@@ -69,8 +70,8 @@ public class UserController {
 
     @GetMapping(value = "/all")
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserDTO> getAllUsers() {
+        return UserDTO.fromModel(userService.getAllUsers());
     }
 
     @PostMapping(value = "/ban/{userId}")
@@ -78,5 +79,4 @@ public class UserController {
     public void addUserToBlackList(@PathVariable int userId) {
         // TODO
     }
-
 }
