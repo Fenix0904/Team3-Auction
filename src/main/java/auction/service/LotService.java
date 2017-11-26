@@ -8,7 +8,9 @@ public interface LotService {
 
     void updateLot(Lot lot);
 
-    void deleteLot(int lotId);
+    boolean deleteLot(int lotId);
+
+    void deleteLot(List<Lot> lots);
 
     List<Lot> getAllLots();
 }

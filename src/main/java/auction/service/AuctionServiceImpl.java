@@ -3,11 +3,18 @@ package auction.service;
 import auction.domain.Auction;
 import auction.domain.AuctionStatus;
 import auction.domain.Lot;
+import auction.domain.User;
 import auction.repository.AuctionRepository;
 import auction.repository.AuctionStatusRepository;
+import auction.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,12 +26,19 @@ public class AuctionServiceImpl implements AuctionService {
 
     private final AuctionRepository auctionRepository;
     private final AuctionStatusRepository auctionStatusRepository;
+    private final UserRepository userRepository;
+
+    private final LotService lotService;
 
     @Autowired
     public AuctionServiceImpl(AuctionRepository auctionRepository,
-                              AuctionStatusRepository auctionStatusRepository) {
+                              AuctionStatusRepository auctionStatusRepository,
+                              UserRepository userRepository,
+                              LotService lotService) {
         this.auctionRepository = auctionRepository;
         this.auctionStatusRepository = auctionStatusRepository;
+        this.userRepository = userRepository;
+        this.lotService = lotService;
     }
 
     @Override
@@ -37,9 +51,35 @@ public class AuctionServiceImpl implements AuctionService {
         auctionRepository.save(auction);
     }
 
+    /**
+     * Only Admin have rights to delete any auction.
+     * Trader (User) can delete only auction he created.
+     *
+     * @param auctionId - identifier of auction.
+     * @return true if user have rights to delete auction, else - false.
+     */
     @Override
-    public void deleteAuction(int auctionId) {
-        auctionRepository.delete(auctionId);
+    public boolean deleteAuction(int auctionId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Auction auction = auctionRepository.findOne(auctionId);
+
+        for (GrantedAuthority authority : auth.getAuthorities()) {
+            if (authority.getAuthority().equals("ROLE_ADMIN")) {
+                lotService.deleteLot(auction.getLots());
+                auctionRepository.delete(auctionId);
+                return true;
+            }
+        }
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername());
+        for (Auction tempAuction : user.getAuctions()) {
+            if (auctionId == tempAuction.getId()) {
+                lotService.deleteLot(auction.getLots());
+                auctionRepository.delete(auctionId);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

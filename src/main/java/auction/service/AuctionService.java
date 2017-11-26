@@ -9,7 +9,7 @@ public interface AuctionService {
 
     void updateAuction(Auction auction);
 
-    void deleteAuction(int auctionId);
+    boolean deleteAuction(int auctionId);
 
     void changeAuctionStatus(int statusId, int auctionId);
 
