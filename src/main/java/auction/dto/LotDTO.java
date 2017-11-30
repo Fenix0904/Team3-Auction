@@ -1,6 +1,8 @@
 package auction.dto;
 
 import auction.domain.Lot;
+import auction.dto.shortdto.AuctionShortDTO;
+
 import java.util.ArrayList;
 import java.util.List;
 

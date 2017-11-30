@@ -1,8 +1,10 @@
 package auction.domain;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "auction")
 public class Auction {

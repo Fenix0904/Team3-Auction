@@ -16,11 +16,14 @@ import java.util.List;
 @Service
 public class LotServiceImpl implements LotService {
 
-    @Autowired
-    private LotRepository lotRepository;
+    private final LotRepository lotRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public LotServiceImpl(LotRepository lotRepository, UserRepository userRepository) {
+        this.lotRepository = lotRepository;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public void createLot(Lot lot) {
@@ -42,6 +45,7 @@ public class LotServiceImpl implements LotService {
     @Override
     public boolean deleteLot(int lotId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         for (GrantedAuthority authority : auth.getAuthorities()) {
             if (authority.getAuthority().equals("ROLE_ADMIN")) {
                 lotRepository.delete(lotId);
