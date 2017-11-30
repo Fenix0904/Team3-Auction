@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,9 +38,13 @@ public class AuctionController {
     @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity deleteLot(@PathVariable int auctionId) {
         boolean result = auctionService.deleteAuction(auctionId);
-        if (result) return new ResponseEntity(HttpStatus.OK);
-        else return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body("You haven't rights to delete this auction!");
+        if (result) {
+            return new ResponseEntity(HttpStatus.OK);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You haven't rights to delete this auction!");
+        }
     }
 
     @PutMapping(value = "/changeStatus/{auctionId}/{statusId}")
