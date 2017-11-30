@@ -10,12 +10,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class BidServiceImpl implements BidService {
 
-    private BidRepository bidRepository;
-
     @Autowired
-    public BidServiceImpl(BidRepository bidRepository) {
-        this.bidRepository = bidRepository;
-    }
+    private BidRepository bidRepository;
 
     @Override
     public void makeBid(Bid bid, User user, Lot lot) {

@@ -8,29 +8,26 @@ import auction.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder encoder;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.encoder = encoder;
-    }
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder encoder;
+
+    private final static int userRoleId = 1;
 
     @Override
     public void createUser(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
-        Role role = roleRepository.getOne(1);
+        Role role = roleRepository.getOne(userRoleId);
         user.setRole(role);
         userRepository.save(user);
     }
