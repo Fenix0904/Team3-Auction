@@ -1,10 +1,10 @@
 package auction.service;
 
+import auction.utils.LotException;
 import auction.domain.Bid;
 import auction.domain.Lot;
-import auction.domain.User;
 
 public interface BidService {
 
-    void makeBid(Bid bid, User user, Lot lot);
+    Lot makeBid(Bid bid) throws LotException;
 }
