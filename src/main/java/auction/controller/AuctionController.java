@@ -38,13 +38,9 @@ public class AuctionController {
     @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity deleteLot(@PathVariable int auctionId) {
         boolean result = auctionService.deleteAuction(auctionId);
-        if (result) {
-            return new ResponseEntity(HttpStatus.OK);
-        }
-        else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You haven't rights to delete this auction!");
-        }
+        if (result) return new ResponseEntity(HttpStatus.OK);
+        else return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("You haven't rights to delete this auction!");
     }
 
     @PutMapping(value = "/changeStatus/{auctionId}/{statusId}")

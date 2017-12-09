@@ -8,6 +8,7 @@ import auction.dto.shortdto.AuctionShortDTO;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class UserDTO {
 
     private int id;

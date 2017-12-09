@@ -1,5 +1,8 @@
 package auction.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -15,6 +18,9 @@ public class Lot {
 
     @Column(name = "initial_price")
     private int initialPrice;
+
+    @Column(name = "current_price")
+    private int currentPrice;
 
     @Column(name = "lot_quantity")
     private int lotQuantity;
@@ -76,6 +82,14 @@ public class Lot {
     public List<Bid> getBids() { return bids; }
 
     public void setBids(List<Bid> bids) { this.bids = bids; }
+
+    public int getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(int currentPrice) {
+        this.currentPrice = currentPrice;
+    }
 
     @Override
     public boolean equals(Object o) {

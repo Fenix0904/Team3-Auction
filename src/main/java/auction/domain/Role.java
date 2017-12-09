@@ -1,6 +1,7 @@
 package auction.domain;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -14,10 +15,6 @@ public class Role {
     private String name;
 
     public Role() {
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getName() {

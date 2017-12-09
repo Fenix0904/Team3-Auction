@@ -2,10 +2,10 @@ package auction.service;
 
 import auction.domain.Auction;
 import auction.domain.AuctionStatus;
+import auction.domain.Lot;
 import auction.domain.User;
 import auction.repository.AuctionRepository;
 import auction.repository.AuctionStatusRepository;
-import auction.repository.LotRepository;
 import auction.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,17 +24,22 @@ public class AuctionServiceImpl implements AuctionService {
 
     private Map<Auction, Integer> cache = new ConcurrentHashMap<>();
 
-    @Autowired
-    private AuctionRepository auctionRepository;
+    private final AuctionRepository auctionRepository;
+    private final AuctionStatusRepository auctionStatusRepository;
+    private final UserRepository userRepository;
+
+    private final LotService lotService;
 
     @Autowired
-    private AuctionStatusRepository auctionStatusRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private LotRepository lotRepository;
+    public AuctionServiceImpl(AuctionRepository auctionRepository,
+                              AuctionStatusRepository auctionStatusRepository,
+                              UserRepository userRepository,
+                              LotService lotService) {
+        this.auctionRepository = auctionRepository;
+        this.auctionStatusRepository = auctionStatusRepository;
+        this.userRepository = userRepository;
+        this.lotService = lotService;
+    }
 
     @Override
     public void createAuction(Auction auction) {
@@ -56,9 +62,10 @@ public class AuctionServiceImpl implements AuctionService {
     public boolean deleteAuction(int auctionId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Auction auction = auctionRepository.findOne(auctionId);
+
         for (GrantedAuthority authority : auth.getAuthorities()) {
             if (authority.getAuthority().equals("ROLE_ADMIN")) {
-                lotRepository.delete(auction.getLots());
+                lotService.deleteLot(auction.getLots());
                 auctionRepository.delete(auctionId);
                 return true;
             }
@@ -67,7 +74,7 @@ public class AuctionServiceImpl implements AuctionService {
         User user = userRepository.findByUsername(userDetails.getUsername());
         for (Auction tempAuction : user.getAuctions()) {
             if (auctionId == tempAuction.getId()) {
-                lotRepository.delete(auction.getLots());
+                lotService.deleteLot(auction.getLots());
                 auctionRepository.delete(auctionId);
                 return true;
             }
@@ -82,7 +89,6 @@ public class AuctionServiceImpl implements AuctionService {
         temp.setAuctionStatus(status);
         auctionRepository.save(temp);
     }
-
     @Override
     public List<Auction> getAllAuctions() {
         List<Auction> list = auctionRepository.findAll();
