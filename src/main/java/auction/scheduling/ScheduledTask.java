@@ -7,8 +7,8 @@ import auction.service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -20,40 +20,35 @@ public class ScheduledTask {
     private AuctionService auctionService;
     @Autowired
     private AuctionStatusRepository auctionStatusRepository;
-    private List<Auction> auctions;
+    private List<Auction> auctionsOpened, auctionsClosed;
     private static final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    private Date currentDate, afterDate;
-    private AuctionStatus planned, open, closed;
+    private Date currentDate, date;
+    private AuctionStatus open, closed;
 
-    @Transactional
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(cron = "0 * * * * *")
     public void checkAuctionStatus() {
         currentDate = new Date();
-        planned = auctionStatusRepository.getOne(1);
         open = auctionStatusRepository.getOne(2);
         closed = auctionStatusRepository.getOne(3);
-        auctions = auctionService.getAllAuctions();
-
-        for(int i = 0; i < auctions.size(); i++) {
-            Auction auction = auctions.get(i);
-            if(auction.getStartDate().after(currentDate))
-            {
-                Auction auctionTemp = auctions.get(i);
-                auctionTemp.setAuctionStatus(planned);
-                auctionService.updateAuction(auctionTemp);
+        currentDate = new Date();
+        try {
+            date = sdf.parse(sdf.format(currentDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        auctionsOpened = auctionService.getOpenedAuctions(date);
+        auctionsClosed = auctionService.getClosedAuctions(date);
+        if(!auctionsOpened.isEmpty()) {
+            for(int i = 0; i < auctionsOpened.size(); i++) {
+                auctionsOpened.get(i).setAuctionStatus(open);
             }
-            else if(auction.getTerminationDate().after(currentDate) || auction.getStartDate().equals(currentDate))
-            {
-                Auction auctionTemp = auctions.get(i);
-                auctionTemp.setAuctionStatus(open);
-                auctionService.updateAuction(auctionTemp);
+            auctionService.updateAuctions(auctionsOpened);
+        }
+        if(!auctionsClosed.isEmpty()) {
+            for(int i = 0; i < auctionsClosed.size(); i++) {
+                auctionsClosed.get(i).setAuctionStatus(closed);
             }
-            else if(auction.getTerminationDate().before(currentDate) || auction.getTerminationDate().equals(currentDate))
-            {
-                Auction auctionTemp = auctions.get(i);
-                auctionTemp.setAuctionStatus(closed);
-                auctionService.updateAuction(auctionTemp);
-            }
+            auctionService.updateAuctions(auctionsClosed);
         }
     }
 }
