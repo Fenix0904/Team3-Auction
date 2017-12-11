@@ -1,12 +1,11 @@
 package auction.dto.shortdto;
 
-import auction.domain.Role;
 import auction.domain.User;
 
 public class UserShortDTO {
     private int id;
     private String username;
-    private Role role;
+    private User.Role role;
     private String name;
 
     public static UserShortDTO fromMode(User user) {
@@ -34,11 +33,11 @@ public class UserShortDTO {
         this.username = username;
     }
 
-    public Role getRole() {
+    public User.Role getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(User.Role role) {
         this.role = role;
     }
 

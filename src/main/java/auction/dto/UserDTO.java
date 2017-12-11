@@ -1,7 +1,6 @@
 package auction.dto;
 
 import auction.domain.Auction;
-import auction.domain.Role;
 import auction.domain.User;
 import auction.dto.shortdto.AuctionShortDTO;
 
@@ -13,10 +12,10 @@ public class UserDTO {
 
     private int id;
     private String username;
-    private Role role;
+    private User.Role role;
     private String name;
     private List<BidDTO> bids;
-    private List<Integer> auctionsId;
+    private List<Integer> auctions;
     private List<AuctionShortDTO> subscribedAuctions;
 
     public static UserDTO fromModel(User user) {
@@ -31,7 +30,7 @@ public class UserDTO {
         for (Auction auction : user.getAuctions()) {
             ids.add(auction.getId());
         }
-        userDTO.setAuctionsId(ids);
+        userDTO.setAuctions(ids);
 
         return userDTO;
     }
@@ -60,11 +59,11 @@ public class UserDTO {
         this.username = username;
     }
 
-    public Role getRole() {
+    public User.Role getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(User.Role role) {
         this.role = role;
     }
 
@@ -92,11 +91,11 @@ public class UserDTO {
         this.subscribedAuctions = subscribedAuctions;
     }
 
-    public List<Integer> getAuctionsId() {
-        return auctionsId;
+    public List<Integer> getAuctions() {
+        return auctions;
     }
 
-    public void setAuctionsId(List<Integer> auctionsId) {
-        this.auctionsId = auctionsId;
+    public void setAuctions(List<Integer> auctions) {
+        this.auctions = auctions;
     }
 }

@@ -1,5 +1,6 @@
 package auction.websocket.handler;
 
+import auction.utils.AuctionException;
 import auction.utils.LotException;
 import auction.domain.Bid;
 import auction.domain.Lot;
@@ -24,26 +25,36 @@ public class BidHandler extends TextWebSocketHandler {
     @Autowired
     private BidService bidService;
 
+
+    // TODO Integer = Auction id.
     private Map<WebSocketSession, Integer> sessions = new ConcurrentHashMap<>();
+
+
+    // TODO send updated lot to all users that enter certain auction.
+    // TODO client side must iterate through list of lots, choose lot, that have same id and update it.
+    // TODO (each update in new thread)
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         Bid bid = mapper.readValue(message.getPayload(), Bid.class);
-        Lot lot = null;
+        //sessions.put(session, bid.getLot().getId());
+        sessions.put(session, bid.getLot().getAuction().getId());
         try {
-            lot = bidService.makeBid(bid);
+            Lot lot = bidService.makeBid(bid);
+            for (Map.Entry<WebSocketSession, Integer> entry : sessions.entrySet()) {
+                //if (lot.getId() == entry.getValue()) {
+                if (lot.getAuction().getId() == entry.getValue()) {
+                    entry.getKey().sendMessage(new TextMessage(mapper.writeValueAsString(lot)));
+                }
+            }
         } catch (LotException e) {
             if (e.getErrorCode() == ANOTHER_CURRENT_PRICE) {
                 session.sendMessage(new BinaryMessage("Lot price has been changed!".getBytes()));
+                session.sendMessage(new TextMessage(mapper.writeValueAsString(e.getLot())));
             }
-        }
-        sessions.put(session, lot.getId());
-        System.out.println(message.getPayload());
-        for (Map.Entry<WebSocketSession, Integer> entry : sessions.entrySet()) {
-            if (lot.getId() == entry.getValue()) {
-                entry.getKey().sendMessage(new TextMessage(String.valueOf(lot.getId())));
-            }
+        } catch (AuctionException e) {
+            session.sendMessage(new BinaryMessage("Auction has been closed!".getBytes()));
         }
     }
 

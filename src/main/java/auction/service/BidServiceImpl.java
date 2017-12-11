@@ -1,5 +1,7 @@
 package auction.service;
 
+import auction.domain.AuctionStatus;
+import auction.utils.AuctionException;
 import auction.utils.LotException;
 import auction.domain.Bid;
 import auction.domain.Lot;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static auction.utils.AuctionException.ErrorCode.AUCTION_IS_CLOSED;
 import static auction.utils.LotException.ErrorCode.*;
 
 @Service
@@ -17,19 +20,20 @@ public class BidServiceImpl implements BidService {
 
     @Autowired
     private LotRepository lotRepository;
+    private Lock lock = new ReentrantLock();
 
     @Override
-    public Lot makeBid(Bid bid) throws LotException {
+    public Lot makeBid(Bid bid) throws LotException, AuctionException {
         Lot currentLot = lotRepository.findOne(bid.getLot().getId());
-        Lock lock = new ReentrantLock(); //TODO lock or synchronized block?
         lock.lock();
+        // TODO synchronized (bid.getLot().getAuction())
         try {
-            if (currentLot.getCurrentPrice() != bid.getLot().getCurrentPrice()) {
+            if (currentLot.getAuction().getAuctionStatus().getStatus() == AuctionStatus.Status.CLOSED)
+                throw new AuctionException(AUCTION_IS_CLOSED, currentLot.getAuction());
+            if (currentLot.getCurrentPrice() != bid.getLot().getCurrentPrice())
                 throw new LotException(ANOTHER_CURRENT_PRICE, currentLot);
-            }
-            if (currentLot.getLotQuantity() == 0) {
+            if (currentLot.getLotQuantity() == 0)
                 throw new LotException(NO_ITEM, currentLot);
-            }
             currentLot.setCurrentPrice(currentLot.getCurrentPrice() + currentLot.getBidStep());
         } finally {
             lock.unlock();

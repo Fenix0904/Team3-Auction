@@ -51,13 +51,13 @@ public class UserController {
 
 
     @PostMapping(value = "/login")
-    public ResponseEntity<Void> login(@RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<UserDTO> login(@RequestBody User user, BindingResult bindingResult) {
         loginValidator.validate(user, bindingResult);
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         securityService.autoLogin(user.getUsername(), user.getPassword());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(UserDTO.fromModel(userService.findByUsername(user.getUsername())), HttpStatus.OK);
     }
 
     @PostMapping(value = "/do_logout")

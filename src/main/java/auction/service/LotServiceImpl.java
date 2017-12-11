@@ -16,14 +16,10 @@ import java.util.List;
 @Service
 public class LotServiceImpl implements LotService {
 
-    private final LotRepository lotRepository;
-    private final UserRepository userRepository;
-
     @Autowired
-    public LotServiceImpl(LotRepository lotRepository, UserRepository userRepository) {
-        this.lotRepository = lotRepository;
-        this.userRepository = userRepository;
-    }
+    private LotRepository lotRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public void createLot(Lot lot) {

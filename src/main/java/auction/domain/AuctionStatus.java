@@ -11,33 +11,28 @@ import javax.persistence.*;
 @Entity(name = "status")
 public class AuctionStatus {
 
+    public enum Status {
+        PLANNED, RUNNING, CLOSED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name")
     private String name;
+
+    @Column
+    private Status status;
 
     public int getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Status getStatus() {
+        return status;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AuctionStatus status = (AuctionStatus) o;
-
-        return name.equals(status.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

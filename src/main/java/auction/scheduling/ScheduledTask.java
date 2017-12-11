@@ -25,9 +25,13 @@ public class ScheduledTask {
     private Date currentDate, date;
     private AuctionStatus open, closed;
 
+    ScheduledTask() {
+        currentDate = new Date();
+
+    }
+
     @Scheduled(cron = "0 * * * * *")
     public void checkAuctionStatus() {
-        currentDate = new Date();
         open = auctionStatusRepository.getOne(2);
         closed = auctionStatusRepository.getOne(3);
         currentDate = new Date();

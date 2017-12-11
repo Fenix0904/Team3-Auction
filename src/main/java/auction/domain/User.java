@@ -6,6 +6,10 @@ import java.util.List;
 @Entity(name = "user")
 public class User {
 
+    public enum Role {
+        ROLE_ADMIN, ROLE_USER
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -19,7 +23,7 @@ public class User {
     @Transient
     private String confirmPassword;
 
-    @OneToOne
+    @Column
     private Role role;
 
     @Column(name = "name")

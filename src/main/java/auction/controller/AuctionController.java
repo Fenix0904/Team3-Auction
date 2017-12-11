@@ -1,6 +1,7 @@
 package auction.controller;
 
 import auction.domain.Auction;
+import auction.domain.User;
 import auction.dto.AuctionDTO;
 import auction.service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +50,23 @@ public class AuctionController {
         auctionService.changeAuctionStatus(statusId, auctionId);
     }
 
-    @GetMapping(value = "/getAll")
+    @GetMapping(value = "/")
     @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    public List<AuctionDTO> getAllAuctions() {
-        return AuctionDTO.fromModel(auctionService.getAllAuctions());
+    public List<AuctionDTO> getAuctions() {
+        return AuctionDTO.fromModel(auctionService.getPlannedAndRunningAuctions());
     }
+
+    @GetMapping(value = "/closed")
+    @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    public List<AuctionDTO> getClosedAuctions() {
+        return AuctionDTO.fromModel(auctionService.getStoppedAuctions());
+    }
+
+    @GetMapping(value = "/{username}/my")
+    @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    public List<AuctionDTO> getUsersAuctions(@PathVariable String username) {
+        return AuctionDTO.fromModel(auctionService.getUsersAuctions(username));
+    }
+
 }
+

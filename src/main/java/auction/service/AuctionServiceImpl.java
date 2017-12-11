@@ -7,7 +7,10 @@ import auction.repository.AuctionRepository;
 import auction.repository.AuctionStatusRepository;
 import auction.repository.LotRepository;
 import auction.repository.UserRepository;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,15 +18,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 
-import java.security.Principal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 @Service
 public class AuctionServiceImpl implements AuctionService {
 
-    private Map<Auction, Integer> cache = new ConcurrentHashMap<>();
+    private final Map<Integer, AuctionStatus> auctionStatusCache = new HashMap<>();
 
     private final AuctionRepository auctionRepository;
     private final AuctionStatusRepository auctionStatusRepository;
@@ -40,6 +48,11 @@ public class AuctionServiceImpl implements AuctionService {
         this.auctionStatusRepository = auctionStatusRepository;
         this.userRepository = userRepository;
         this.lotService = lotService;
+
+        List<AuctionStatus> auctionStatuses = this.auctionStatusRepository.findAll();
+        for (AuctionStatus auctionStatus : auctionStatuses) {
+            auctionStatusCache.put(auctionStatus.getId(), auctionStatus);
+        }
     }
 
     @Override
@@ -49,7 +62,7 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     public void updateAuction(Auction auction) {
-        auctionRepository.save(auction);
+            auctionRepository.save(auction);
     }
 
     @Override
@@ -70,8 +83,12 @@ public class AuctionServiceImpl implements AuctionService {
         Auction auction = auctionRepository.findOne(auctionId);
         for (GrantedAuthority authority : auth.getAuthorities()) {
             if (authority.getAuthority().equals("ROLE_ADMIN")) {
-                lotService.deleteLot(auction.getLots());
-                auctionRepository.delete(auctionId);
+                try {
+                    lotService.deleteLot(auction.getLots());
+                    auctionRepository.delete(auctionId);
+                } catch (EmptyResultDataAccessException e) {
+                    return true;
+                }
                 return true;
             }
         }
@@ -79,36 +96,49 @@ public class AuctionServiceImpl implements AuctionService {
         User user = userRepository.findByUsername(userDetails.getUsername());
         for (Auction tempAuction : user.getAuctions()) {
             if (auctionId == tempAuction.getId()) {
-                lotService.deleteLot(auction.getLots());
-                auctionRepository.delete(auctionId);
+                try {
+                    lotService.deleteLot(auction.getLots());
+                    auctionRepository.delete(auctionId);
+                } catch (EmptyResultDataAccessException e) {
+                    return true;
+                }
                 return true;
             }
         }
         return false;
     }
 
+
+    // TODO
     @Override
     public void changeAuctionStatus(int statusId, int auctionId) {
         Auction temp = auctionRepository.findOne(auctionId);
-        AuctionStatus status = auctionStatusRepository.findOne(statusId);
-        temp.setAuctionStatus(status);
+        temp.setAuctionStatus(auctionStatusCache.get(statusId));
         auctionRepository.save(temp);
     }
+
     @Override
-    public List<Auction> getAllAuctions() {
-        List<Auction> list = auctionRepository.findAll();
-        return list;
+    public List<Auction> getUsersAuctions(String username) {
+        return auctionRepository.getAuctionsByTraderUsername(username);
+    }
+
+    @Override
+    public List<Auction> getPlannedAndRunningAuctions() {
+        return auctionRepository.getAuctionsByAuctionStatusIsNot(auctionStatusCache.get(3));
+    }
+
+    @Override
+    public List<Auction> getStoppedAuctions() {
+        return auctionRepository.getAuctionsByAuctionStatus(auctionStatusCache.get(3));
     }
 
     @Override
     public List<Auction> getOpenedAuctions(Date date) {
-        List<Auction> auctions = auctionRepository.getAuctionsByStartDateIs(date);
-        return auctions;
+        return auctionRepository.getAuctionsByStartDateIs(date);
     }
 
     @Override
     public List<Auction> getClosedAuctions(Date date) {
-        List<Auction> auctions = auctionRepository.getAuctionsByTerminationDateIs(date);
-        return auctions;
+        return auctionRepository.getAuctionsByTerminationDateIs(date);
     }
 }
