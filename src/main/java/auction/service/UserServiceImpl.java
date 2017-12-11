@@ -5,13 +5,14 @@ import auction.domain.Role;
 import auction.domain.User;
 import auction.repository.RoleRepository;
 import auction.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -19,6 +20,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
@@ -33,20 +35,24 @@ public class UserServiceImpl implements UserService {
         Role role = roleRepository.getOne(1);
         user.setRole(role);
         userRepository.save(user);
+        log.info("createUser method executed");
     }
 
     @Override
     public User findByUsername(String username) {
+        log.info("findByUserName method executed");
         return userRepository.findByUsername(username);
     }
 
     @Override
     public User findById(int id) {
+        log.info("findById method executed");
         return userRepository.findById(id);
     }
 
     @Override
     public List<User> getAllUsers() {
+        log.info("getAllUsers method executed");
         return userRepository.findAll();
     }
 }

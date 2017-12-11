@@ -5,6 +5,8 @@ import auction.domain.Bid;
 import auction.domain.Lot;
 import auction.service.BidService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
@@ -25,6 +27,8 @@ public class BidHandler extends TextWebSocketHandler {
     private BidService bidService;
 
     private Map<WebSocketSession, Integer> sessions = new ConcurrentHashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(BidHandler.class);
+
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -37,6 +41,7 @@ public class BidHandler extends TextWebSocketHandler {
             if (e.getErrorCode() == ANOTHER_CURRENT_PRICE) {
                 session.sendMessage(new BinaryMessage("Lot price has been changed!".getBytes()));
             }
+            log.warn("LotException " +e.getErrorCode()+ " caused in handleTextMessage method");
         }
         sessions.put(session, lot.getId());
         System.out.println(message.getPayload());
@@ -45,11 +50,13 @@ public class BidHandler extends TextWebSocketHandler {
                 entry.getKey().sendMessage(new TextMessage(String.valueOf(lot.getId())));
             }
         }
+        log.info("hanleTextMessage method executed");
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         System.out.println("Removing session " + session.getId());
         sessions.remove(session);
+        log.info("afterConnectionClosed method executed");
     }
 }

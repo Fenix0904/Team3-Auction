@@ -5,6 +5,8 @@ import auction.domain.Lot;
 import auction.domain.User;
 import auction.repository.LotRepository;
 import auction.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +20,8 @@ public class LotServiceImpl implements LotService {
 
     private final LotRepository lotRepository;
     private final UserRepository userRepository;
+    private static final Logger log = LoggerFactory.getLogger(LotServiceImpl.class);
+
 
     @Autowired
     public LotServiceImpl(LotRepository lotRepository, UserRepository userRepository) {
@@ -28,11 +32,13 @@ public class LotServiceImpl implements LotService {
     @Override
     public void createLot(Lot lot) {
         lotRepository.save(lot);
+        log.info("createLot method executed");
     }
 
     @Override
     public void updateLot(Lot lot) {
         lotRepository.save(lot);
+        log.info("updateLot method executed");
     }
 
     /**
@@ -62,16 +68,20 @@ public class LotServiceImpl implements LotService {
                 }
             }
         }
+        log.info("deleteLot method executed");
         return false;
     }
 
     @Override
     public void deleteLot(List<Lot> lots) {
         lotRepository.delete(lots);
+        log.info("deleteLot method executed");
+
     }
 
     @Override
     public List<Lot> getAllLots() {
+        log.info("getAllLots method executed");
         return lotRepository.findAll();
     }
 }

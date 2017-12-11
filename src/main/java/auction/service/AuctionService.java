@@ -1,6 +1,7 @@
 package auction.service;
 
 import auction.domain.Auction;
+import auction.domain.AuctionStatus;
 import java.util.Date;
 import java.util.List;
 
@@ -21,4 +22,8 @@ public interface AuctionService {
     List<Auction> getOpenedAuctions(Date date);
 
     List<Auction> getClosedAuctions(Date date);
+
+    List<Auction> getAuctionsQueryFirst(Date dateFist, Date dateSecond, AuctionStatus auctionStatus);
+
+    List<Auction> getAuctionsQuerySecond(Date date, AuctionStatus auctionStatus);
 }
