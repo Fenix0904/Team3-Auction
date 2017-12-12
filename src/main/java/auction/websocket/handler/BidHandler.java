@@ -1,10 +1,10 @@
 package auction.websocket.handler;
 
-import auction.utils.AuctionException;
-import auction.utils.LotException;
 import auction.domain.Bid;
 import auction.domain.Lot;
 import auction.service.BidService;
+import auction.utils.AuctionException;
+import auction.utils.LotException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -152,16 +152,16 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public List<Auction> getAuctionsQueryFirst(Date dateFist, Date dateSecond, AuctionStatus auctionStatus) {
+    public List<Auction> getAuctionsByCustomParameters(Date dateFist, Date dateSecond, AuctionStatus auctionStatus) {
         List<Auction> auctions = auctionRepository.getAuctionsByStartDateIsBeforeAndTerminationDateIsAfterAndAuctionStatusIs(dateFist, dateSecond, auctionStatus);
-        log.info("getAuctionsQueryFirst executed");
+        log.info("getAuctionsByCustomParameters executed");
         return auctions;
     }
 
     @Override
-    public List<Auction> getAuctionsQuerySecond(Date date, AuctionStatus auctionStatus) {
-        List<Auction> auctions = auctionRepository.getAuctionsByTerminationDateIsBeforeAndAuctionStatusIs(date, auctionStatus);
-        log.info("getAuctionsQuerySecond executed");
+    public List<Auction> getAuctionsByCustomParameters(Date date, AuctionStatus firstStatus, AuctionStatus secondStatus) {
+        List<Auction> auctions = auctionRepository.getAuctionsByTerminationDateIsBeforeAndAuctionStatusIsOrAuctionStatusIs(date, firstStatus, secondStatus);
+        log.info("getAuctionsByCustomParameters executed");
         return auctions;
     }
 }

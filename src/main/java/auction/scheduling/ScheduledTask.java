@@ -25,7 +25,6 @@ public class ScheduledTask {
     @Autowired
     private AuctionStatusRepository auctionStatusRepository;
 
-    private List<Auction> auctionsOpened, auctionsClosed, auctionsToOpened, auctionsToClosed;
     private static final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     private Date currentDate, date;
     private AuctionStatus planned, open, closed;
@@ -40,17 +39,17 @@ public class ScheduledTask {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        auctionsOpened = auctionService.getOpenedAuctions(date);
-        auctionsClosed = auctionService.getClosedAuctions(date);
+        List<Auction> auctionsOpened = auctionService.getOpenedAuctions(date);
+        List<Auction> auctionsClosed = auctionService.getClosedAuctions(date);
         if (!auctionsOpened.isEmpty()) {
-            for (int i = 0; i < auctionsOpened.size(); i++) {
-                auctionsOpened.get(i).setAuctionStatus(open);
+            for (Auction anAuctionsOpened : auctionsOpened) {
+                anAuctionsOpened.setAuctionStatus(open);
             }
             auctionService.updateAuctions(auctionsOpened);
         }
         if (!auctionsClosed.isEmpty()) {
-            for (int i = 0; i < auctionsClosed.size(); i++) {
-                auctionsClosed.get(i).setAuctionStatus(closed);
+            for (Auction anAuctionsClosed : auctionsClosed) {
+                anAuctionsClosed.setAuctionStatus(closed);
             }
             auctionService.updateAuctions(auctionsClosed);
         }
@@ -70,8 +69,8 @@ public class ScheduledTask {
             e.printStackTrace();
         }
 
-        auctionsToOpened = auctionService.getAuctionsQueryFirst(date, date, planned);
-        auctionsToClosed = auctionService.getAuctionsQuerySecond(date, open);
+        List<Auction> auctionsToOpened = auctionService.getAuctionsByCustomParameters(date, date, planned);
+        List<Auction> auctionsToClosed = auctionService.getAuctionsByCustomParameters(date, planned, open);
 
         if (!auctionsToOpened.isEmpty()) {
             for (int i = 0; i < auctionsToOpened.size(); i++) {
@@ -85,6 +84,6 @@ public class ScheduledTask {
             }
             auctionService.updateAuctions(auctionsToClosed);
         }
-        log.info("scheduled sturtup task executed");
+        log.info("scheduled startup task executed");
     }
 }
