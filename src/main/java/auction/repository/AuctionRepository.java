@@ -19,4 +19,7 @@ public interface AuctionRepository extends JpaRepository<Auction, Integer> {
 
     List<Auction> getAuctionsByTerminationDateIs(Date date);
 
+    List<Auction> getAuctionsByStartDateIsBeforeAndTerminationDateIsAfterAndAuctionStatusIs(Date dateFist, Date dateSecond, AuctionStatus auctionStatus);
+
+    List<Auction> getAuctionsByTerminationDateIsBeforeAndAuctionStatusIs(Date date, AuctionStatus auctionStatus);
 }

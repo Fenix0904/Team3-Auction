@@ -6,9 +6,10 @@ import auction.utils.LotException;
 import auction.domain.Bid;
 import auction.domain.Lot;
 import auction.repository.LotRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -21,6 +22,7 @@ public class BidServiceImpl implements BidService {
     @Autowired
     private LotRepository lotRepository;
     private Lock lock = new ReentrantLock();
+    private static final Logger log = LoggerFactory.getLogger(BidServiceImpl.class);
 
     @Override
     public Lot makeBid(Bid bid) throws LotException, AuctionException {
@@ -39,6 +41,7 @@ public class BidServiceImpl implements BidService {
             lock.unlock();
         }
         lotRepository.save(currentLot);
+        log.info("makeBid method executed");
         return currentLot;
     }
 }

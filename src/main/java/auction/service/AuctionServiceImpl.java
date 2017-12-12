@@ -5,8 +5,9 @@ import auction.domain.AuctionStatus;
 import auction.domain.User;
 import auction.repository.AuctionRepository;
 import auction.repository.AuctionStatusRepository;
-import auction.repository.LotRepository;
 import auction.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -26,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
+
 
 @Service
 public class AuctionServiceImpl implements AuctionService {
@@ -38,6 +39,8 @@ public class AuctionServiceImpl implements AuctionService {
     private final UserRepository userRepository;
 
     private final LotService lotService;
+    private static final Logger log = LoggerFactory.getLogger(AuctionServiceImpl.class);
+
 
     @Autowired
     public AuctionServiceImpl(AuctionRepository auctionRepository,
@@ -58,16 +61,20 @@ public class AuctionServiceImpl implements AuctionService {
     @Override
     public void createAuction(Auction auction) {
         auctionRepository.save(auction);
+        log.info("createAuction method executed");
     }
 
     @Override
     public void updateAuction(Auction auction) {
-            auctionRepository.save(auction);
+        auctionRepository.save(auction);
+        log.info("updateAuction method executed");
+
     }
 
     @Override
     public void updateAuctions(List<Auction> auctions) {
         auctionRepository.save(auctions);
+        log.info("updateAuctions method executed");
     }
 
     /**
@@ -105,16 +112,16 @@ public class AuctionServiceImpl implements AuctionService {
                 return true;
             }
         }
+        log.info("deleteAuction method executed");
         return false;
     }
 
-
-    // TODO
     @Override
     public void changeAuctionStatus(int statusId, int auctionId) {
         Auction temp = auctionRepository.findOne(auctionId);
         temp.setAuctionStatus(auctionStatusCache.get(statusId));
         auctionRepository.save(temp);
+        log.info("changeAuction method executed");
     }
 
     @Override
@@ -139,6 +146,22 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     public List<Auction> getClosedAuctions(Date date) {
-        return auctionRepository.getAuctionsByTerminationDateIs(date);
+        List<Auction> auctions = auctionRepository.getAuctionsByTerminationDateIs(date);
+        log.info("getClosedAuctions method executed");
+        return auctions;
+    }
+
+    @Override
+    public List<Auction> getAuctionsQueryFirst(Date dateFist, Date dateSecond, AuctionStatus auctionStatus) {
+        List<Auction> auctions = auctionRepository.getAuctionsByStartDateIsBeforeAndTerminationDateIsAfterAndAuctionStatusIs(dateFist, dateSecond, auctionStatus);
+        log.info("getAuctionsQueryFirst executed");
+        return auctions;
+    }
+
+    @Override
+    public List<Auction> getAuctionsQuerySecond(Date date, AuctionStatus auctionStatus) {
+        List<Auction> auctions = auctionRepository.getAuctionsByTerminationDateIsBeforeAndAuctionStatusIs(date, auctionStatus);
+        log.info("getAuctionsQuerySecond executed");
+        return auctions;
     }
 }
