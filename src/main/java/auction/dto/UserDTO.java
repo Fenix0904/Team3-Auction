@@ -1,12 +1,10 @@
 package auction.dto;
 
-import auction.domain.Auction;
 import auction.domain.User;
 import auction.dto.shortdto.AuctionShortDTO;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class UserDTO {
 
@@ -15,7 +13,7 @@ public class UserDTO {
     private User.Role role;
     private String name;
     private List<BidDTO> bids;
-    private List<Integer> auctions;
+    private List<AuctionShortDTO> auctions;
     private List<AuctionShortDTO> subscribedAuctions;
 
     public static UserDTO fromModel(User user) {
@@ -26,12 +24,7 @@ public class UserDTO {
         userDTO.setRole(user.getRole());
         userDTO.setBids(BidDTO.fromModel(user.getBids()));
         userDTO.setSubscribedAuctions(AuctionShortDTO.fromModel(user.getSubscribedAuctions()));
-        List<Integer> ids = new ArrayList<>();
-        for (Auction auction : user.getAuctions()) {
-            ids.add(auction.getId());
-        }
-        userDTO.setAuctions(ids);
-
+        userDTO.setAuctions(AuctionShortDTO.fromModel(user.getAuctions()));
         return userDTO;
     }
 
@@ -83,19 +76,19 @@ public class UserDTO {
         this.bids = bids;
     }
 
+    public List<AuctionShortDTO> getAuctions() {
+        return auctions;
+    }
+
+    public void setAuctions(List<AuctionShortDTO> auctions) {
+        this.auctions = auctions;
+    }
+
     public List<AuctionShortDTO> getSubscribedAuctions() {
         return subscribedAuctions;
     }
 
     public void setSubscribedAuctions(List<AuctionShortDTO> subscribedAuctions) {
         this.subscribedAuctions = subscribedAuctions;
-    }
-
-    public List<Integer> getAuctions() {
-        return auctions;
-    }
-
-    public void setAuctions(List<Integer> auctions) {
-        this.auctions = auctions;
     }
 }

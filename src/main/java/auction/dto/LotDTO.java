@@ -45,12 +45,12 @@ public class LotDTO {
         return lotDTOS;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {

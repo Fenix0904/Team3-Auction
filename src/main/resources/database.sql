@@ -1,8 +1,5 @@
 -- Insert data
 
-INSERT INTO roles VALUES (1, 'ROLE_ADMIN');
-INSERT INTO roles VALUES (2, 'ROLE_USER');
-
 INSERT INTO user VALUES (1,
                          'Svyatoslav',
                          -- Це пароль, я заюзав new BCryptPasswordEncoder().encode("тут свій пароль");
@@ -18,11 +15,10 @@ INSERT INTO user VALUES (2,
                          'TestUser');
 
 INSERT INTO category VALUES (1, 'TEH');
-
-INSERT INTO status VALUES (1, 'PLANNED', 0);
-INSERT INTO status VALUES (2, 'OPEN', 1);
-INSERT INTO status VALUES (3, 'CLOSED', 2);
-
+INSERT INTO category VALUES (2, 'T');
+INSERT INTO category VALUES (3, 'G');
+INSERT INTO category VALUES (4, 'V');
+INSERT INTO category VALUES (5, 'A');
 
 INSERT INTO auction VALUES (1, '2020-12-12', '2020-12-12', 1, 1, 1);
 INSERT INTO auction VALUES (2, '2020-12-12', '2020-12-12', 1, 1, 3);

@@ -2,8 +2,10 @@ package auction.service;
 
 import auction.domain.Auction;
 import auction.domain.Lot;
+import auction.domain.Photo;
 import auction.domain.User;
 import auction.repository.LotRepository;
+import auction.repository.PhotoRepository;
 import auction.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +22,33 @@ public class LotServiceImpl implements LotService {
 
     private final LotRepository lotRepository;
     private final UserRepository userRepository;
+    private final PhotoService photoService;
     private static final Logger log = LoggerFactory.getLogger(LotServiceImpl.class);
 
 
     @Autowired
-    public LotServiceImpl(LotRepository lotRepository, UserRepository userRepository) {
+    public LotServiceImpl(LotRepository lotRepository, UserRepository userRepository, PhotoService photoService) {
         this.lotRepository = lotRepository;
         this.userRepository = userRepository;
+        this.photoService = photoService;
     }
 
     @Override
     public void createLot(Lot lot) {
-        lotRepository.save(lot);
+        Lot result = lotRepository.save(lot);
+        photoService.addPhotos(lot.getPhotos(), result);
         log.info("createLot method executed");
     }
+
+    @Override
+    public void createLots(List<Lot> lots,  Auction auction) {
+        for (Lot lot : lots) {
+            lot.setAuction(auction);
+        }
+        lotRepository.save(lots);
+        log.info("createLots method executed");
+    }
+
 
     @Override
     public void updateLot(Lot lot) {

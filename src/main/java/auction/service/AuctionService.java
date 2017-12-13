@@ -1,8 +1,8 @@
 package auction.service;
 
 import auction.domain.Auction;
-import auction.domain.AuctionStatus;
-import java.util.Date;
+
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface AuctionService {
@@ -19,9 +19,9 @@ public interface AuctionService {
 
     List<Auction> getUsersAuctions(String username);
 
-    List<Auction> getOpenedAuctions(Date date);
+    List<Auction> getOpenedAuctions(ZonedDateTime date);
 
-    List<Auction> getClosedAuctions(Date date);
+    List<Auction> getClosedAuctions(ZonedDateTime date);
 
     List<Auction> getPlannedAndRunningAuctions();
 
@@ -36,7 +36,7 @@ public interface AuctionService {
      * @return list of auctions which status wasn't changed because, for example,
      * server was down.
      */
-    List<Auction> getAuctionsByCustomParameters(Date dateFist, Date dateSecond, AuctionStatus auctionStatus);
+    List<Auction> getAuctionsByCustomParameters(ZonedDateTime dateFist, ZonedDateTime dateSecond, Auction.Status auctionStatus);
 
     /**
      * Method return all "planned" and "opened" auctions that wasn't closed
@@ -45,5 +45,5 @@ public interface AuctionService {
      * @param date - current time of server
      * @return list of auctions that wasn't opened or wasn't closed
      */
-    List<Auction> getAuctionsByCustomParameters(Date date, AuctionStatus firstStatus, AuctionStatus secondStatus);
+    List<Auction> getAuctionsByCustomParameters(ZonedDateTime date, Auction.Status firstStatus, Auction.Status secondStatus);
 }

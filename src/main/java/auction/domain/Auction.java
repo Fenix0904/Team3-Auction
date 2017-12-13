@@ -2,25 +2,31 @@ package auction.domain;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 @Entity(name = "auction")
 public class Auction {
-    
+
+    public enum Status {
+        PLANNED, RUNNING, CLOSED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
-    private AuctionStatus auctionStatus;
+    private String title;
+
+    private Status auctionStatus;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private ZonedDateTime startDate;
 
     @Column(name = "termination_date")
-    private Date terminationDate;
+    private ZonedDateTime terminationDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -42,27 +48,35 @@ public class Auction {
         return id;
     }
 
-    public AuctionStatus getAuctionStatus() {
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Status getAuctionStatus() {
         return auctionStatus;
     }
 
-    public void setAuctionStatus(AuctionStatus auctionStatus) {
+    public void setAuctionStatus(Status auctionStatus) {
         this.auctionStatus = auctionStatus;
     }
 
-    public Date getStartDate() {
+    public ZonedDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(ZonedDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Date getTerminationDate() {
+    public ZonedDateTime getTerminationDate() {
         return terminationDate;
     }
 
-    public void setTerminationDate(Date terminationDate) {
+    public void setTerminationDate(ZonedDateTime terminationDate) {
         this.terminationDate = terminationDate;
     }
 

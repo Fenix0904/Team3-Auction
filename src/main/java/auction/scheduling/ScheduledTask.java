@@ -1,8 +1,6 @@
 package auction.scheduling;
 
 import auction.domain.Auction;
-import auction.domain.AuctionStatus;
-import auction.repository.AuctionStatusRepository;
 import auction.service.AuctionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +9,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Component
@@ -22,34 +18,26 @@ public class ScheduledTask {
 
     @Autowired
     private AuctionService auctionService;
-    @Autowired
-    private AuctionStatusRepository auctionStatusRepository;
 
-    private static final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    private Date currentDate, date;
-    private AuctionStatus planned, open, closed;
+    private ZonedDateTime currentDate;
     private static final Logger log = LoggerFactory.getLogger(ScheduledTask.class);
 
     @Scheduled(cron = "0 * * * * *")
     public void checkAuctionStatus() {
         log.info("scheduled task starting execution");
-        currentDate = new Date();
-        try {
-            date = sdf.parse(sdf.format(currentDate));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        List<Auction> auctionsOpened = auctionService.getOpenedAuctions(date);
-        List<Auction> auctionsClosed = auctionService.getClosedAuctions(date);
+        currentDate = ZonedDateTime.now();
+
+        List<Auction> auctionsOpened = auctionService.getOpenedAuctions(currentDate);
+        List<Auction> auctionsClosed = auctionService.getClosedAuctions(currentDate);
         if (!auctionsOpened.isEmpty()) {
             for (Auction anAuctionsOpened : auctionsOpened) {
-                anAuctionsOpened.setAuctionStatus(open);
+                anAuctionsOpened.setAuctionStatus(Auction.Status.RUNNING);
             }
             auctionService.updateAuctions(auctionsOpened);
         }
         if (!auctionsClosed.isEmpty()) {
             for (Auction anAuctionsClosed : auctionsClosed) {
-                anAuctionsClosed.setAuctionStatus(closed);
+                anAuctionsClosed.setAuctionStatus(Auction.Status.CLOSED);
             }
             auctionService.updateAuctions(auctionsClosed);
         }
@@ -59,30 +47,21 @@ public class ScheduledTask {
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("scheduled sturtup task starting execution");
-        planned = auctionStatusRepository.getOne(1);
-        open = auctionStatusRepository.getOne(2);
-        closed = auctionStatusRepository.getOne(3);
-        currentDate = new Date();
-        try {
-            date = sdf.parse(sdf.format(currentDate));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        currentDate = ZonedDateTime.now();
+        List<Auction> auctionsToOpen = auctionService.getAuctionsByCustomParameters(currentDate, currentDate, Auction.Status.PLANNED);
+        List<Auction> auctionsToClose = auctionService.getAuctionsByCustomParameters(currentDate, Auction.Status.PLANNED, Auction.Status.RUNNING);
 
-        List<Auction> auctionsToOpened = auctionService.getAuctionsByCustomParameters(date, date, planned);
-        List<Auction> auctionsToClosed = auctionService.getAuctionsByCustomParameters(date, planned, open);
-
-        if (!auctionsToOpened.isEmpty()) {
-            for (int i = 0; i < auctionsToOpened.size(); i++) {
-                auctionsToOpened.get(i).setAuctionStatus(open);
+        if (!auctionsToOpen.isEmpty()) {
+            for (int i = 0; i < auctionsToOpen.size(); i++) {
+                auctionsToOpen.get(i).setAuctionStatus(Auction.Status.RUNNING);
             }
-            auctionService.updateAuctions(auctionsToOpened);
+            auctionService.updateAuctions(auctionsToOpen);
         }
-        if (!auctionsToClosed.isEmpty()) {
-            for (int i = 0; i < auctionsToClosed.size(); i++) {
-                auctionsToClosed.get(i).setAuctionStatus(closed);
+        if (!auctionsToClose.isEmpty()) {
+            for (int i = 0; i < auctionsToClose.size(); i++) {
+                auctionsToClose.get(i).setAuctionStatus(Auction.Status.CLOSED);
             }
-            auctionService.updateAuctions(auctionsToClosed);
+            auctionService.updateAuctions(auctionsToClose);
         }
         log.info("scheduled startup task executed");
     }

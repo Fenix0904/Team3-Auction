@@ -1,20 +1,23 @@
 package auction.dto.shortdto;
 
 import auction.domain.Auction;
-import auction.domain.AuctionStatus;
 import auction.domain.Category;
 
-import java.util.*;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuctionShortDTO {
 
     private int id;
 
-    private AuctionStatus auctionStatus;
+    private String title;
 
-    private Date startDate;
+    private Auction.Status auctionStatus;
 
-    private Date terminationDate;
+    private ZonedDateTime startDate;
+
+    private ZonedDateTime terminationDate;
 
     private UserShortDTO trader;
 
@@ -23,6 +26,7 @@ public class AuctionShortDTO {
     public static AuctionShortDTO fromModel(Auction auction) {
         AuctionShortDTO auctionShortDTO = new AuctionShortDTO();
         auctionShortDTO.setId(auction.getId());
+        auctionShortDTO.setTitle(auction.getTitle());
         auctionShortDTO.setAuctionStatus(auction.getAuctionStatus());
         auctionShortDTO.setStartDate(auction.getStartDate());
         auctionShortDTO.setTerminationDate(auction.getTerminationDate());
@@ -47,27 +51,35 @@ public class AuctionShortDTO {
         this.id = id;
     }
 
-    public AuctionStatus getAuctionStatus() {
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Auction.Status getAuctionStatus() {
         return auctionStatus;
     }
 
-    public void setAuctionStatus(AuctionStatus auctionStatus) {
+    public void setAuctionStatus(Auction.Status auctionStatus) {
         this.auctionStatus = auctionStatus;
     }
 
-    public Date getStartDate() {
+    public ZonedDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(ZonedDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Date getTerminationDate() {
+    public ZonedDateTime getTerminationDate() {
         return terminationDate;
     }
 
-    public void setTerminationDate(Date terminationDate) {
+    public void setTerminationDate(ZonedDateTime terminationDate) {
         this.terminationDate = terminationDate;
     }
 

@@ -1,6 +1,6 @@
 package auction.service;
 
-import auction.domain.AuctionStatus;
+import auction.domain.Auction;
 import auction.utils.AuctionException;
 import auction.utils.LotException;
 import auction.domain.Bid;
@@ -30,7 +30,7 @@ public class BidServiceImpl implements BidService {
         lock.lock();
         // TODO synchronized (bid.getLot().getAuction())
         try {
-            if (currentLot.getAuction().getAuctionStatus().getStatus() == AuctionStatus.Status.CLOSED)
+            if (currentLot.getAuction().getAuctionStatus() == Auction.Status.CLOSED)
                 throw new AuctionException(AUCTION_IS_CLOSED, currentLot.getAuction());
             if (currentLot.getCurrentPrice() != bid.getLot().getCurrentPrice())
                 throw new LotException(ANOTHER_CURRENT_PRICE, currentLot);
