@@ -45,5 +45,5 @@ public interface AuctionService {
      * @param date - current time of server
      * @return list of auctions that wasn't opened or wasn't closed
      */
-    List<Auction> getAuctionsByCustomParameters(ZonedDateTime date, Auction.Status firstStatus, Auction.Status secondStatus);
+    List<Auction> getAuctionsByCustomParameters(ZonedDateTime date, Auction.Status status);
 }

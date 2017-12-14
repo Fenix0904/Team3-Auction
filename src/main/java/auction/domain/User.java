@@ -1,5 +1,9 @@
 package auction.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -26,24 +30,19 @@ public class User {
     @Column
     private Role role;
 
-    @Column(name = "name")
-    private String name;
-
     @OneToMany(mappedBy = "user")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Bid> bids;
 
     @OneToMany(mappedBy = "trader")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Auction> auctions;
 
     @ManyToMany(mappedBy = "subscribers")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Auction> subscribedAuctions;
 
     public User() {
-    }
-
-    public User(String name) {
-        this();
-        this.name = name;
     }
 
     public int getId() {
@@ -72,14 +71,6 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<Bid> getBids() {

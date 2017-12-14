@@ -2,6 +2,7 @@ package auction.websocket.handler;
 
 import auction.domain.Bid;
 import auction.domain.Lot;
+import auction.dto.LotDTO;
 import auction.service.BidService;
 import auction.utils.AuctionException;
 import auction.utils.LotException;
@@ -26,28 +27,23 @@ public class BidHandler extends TextWebSocketHandler {
 
     @Autowired
     private BidService bidService;
+    @Autowired
+    private ObjectMapper mapper;
 
-
-    // TODO Integer = Auction id.
     private Map<WebSocketSession, Integer> sessions = new ConcurrentHashMap<>();
+
     private static final Logger log = LoggerFactory.getLogger(BidHandler.class);
 
-
-    // TODO send updated lot to all users that enter certain auction.
-    // TODO client side must iterate through list of lots, choose lot, that have same id and update it.
     // TODO (each update in new thread)
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
         Bid bid = mapper.readValue(message.getPayload(), Bid.class);
-        //sessions.put(session, bid.getLot().getId());
         sessions.put(session, bid.getLot().getAuction().getId());
         try {
             Lot lot = bidService.makeBid(bid);
             for (Map.Entry<WebSocketSession, Integer> entry : sessions.entrySet()) {
-                //if (lot.getId() == entry.getValue()) {
                 if (lot.getAuction().getId() == entry.getValue()) {
-                    entry.getKey().sendMessage(new TextMessage(mapper.writeValueAsString(lot)));
+                    entry.getKey().sendMessage(new TextMessage(mapper.writeValueAsString(LotDTO.fromModel(lot))));
                 }
             }
         } catch (LotException e) {

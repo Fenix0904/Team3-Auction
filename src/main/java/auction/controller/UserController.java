@@ -39,14 +39,14 @@ public class UserController {
     }
 
     @PostMapping(value = "/registration")
-    public ResponseEntity<Void> registration(@RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<UserDTO> registration(@RequestBody User user, BindingResult bindingResult) {
         registrationValidator.validate(user, bindingResult);
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         userService.createUser(user);
         securityService.autoLogin(user.getUsername(), user.getConfirmPassword());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(UserDTO.fromModel(userService.findByUsername(user.getUsername())), HttpStatus.OK);
     }
 
 

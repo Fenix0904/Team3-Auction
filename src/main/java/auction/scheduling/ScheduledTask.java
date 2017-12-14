@@ -49,7 +49,7 @@ public class ScheduledTask {
         log.info("scheduled sturtup task starting execution");
         currentDate = ZonedDateTime.now();
         List<Auction> auctionsToOpen = auctionService.getAuctionsByCustomParameters(currentDate, currentDate, Auction.Status.PLANNED);
-        List<Auction> auctionsToClose = auctionService.getAuctionsByCustomParameters(currentDate, Auction.Status.PLANNED, Auction.Status.RUNNING);
+        List<Auction> auctionsToClose = auctionService.getAuctionsByCustomParameters(currentDate, Auction.Status.CLOSED);
 
         if (!auctionsToOpen.isEmpty()) {
             for (int i = 0; i < auctionsToOpen.size(); i++) {

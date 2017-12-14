@@ -3,8 +3,8 @@ package auction.dto;
 import auction.domain.Bid;
 import auction.dto.shortdto.UserShortDTO;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class BidDTO {
@@ -15,18 +15,18 @@ public class BidDTO {
 
     private UserShortDTO user;
 
-    private Date bidTime;
+    private ZonedDateTime bidTime;
 
     public static List<BidDTO> fromModel(List<Bid> bids) {
         List<BidDTO> bidDTOS = new ArrayList<>();
-        for (BidDTO bidDTO : bidDTOS) {
             for (Bid bid : bids) {
-                bidDTO.setId(bid.getId());
-                bidDTO.setBidValue(bid.getBidValue());
-                bidDTO.setUser(UserShortDTO.fromMode(bid.getUser()));
-                bidDTO.setBidTime(bid.getBidTime());
+                BidDTO temp = new BidDTO();
+                temp.setId(bid.getId());
+                temp.setBidValue(bid.getBidValue());
+                temp.setUser(UserShortDTO.fromMode(bid.getUser()));
+                temp.setBidTime(bid.getBidTime());
+                bidDTOS.add(temp);
             }
-        }
         return bidDTOS;
     }
 
@@ -54,11 +54,11 @@ public class BidDTO {
         this.user = user;
     }
 
-    public Date getBidTime() {
+    public ZonedDateTime getBidTime() {
         return bidTime;
     }
 
-    public void setBidTime(Date bidTime) {
+    public void setBidTime(ZonedDateTime bidTime) {
         this.bidTime = bidTime;
     }
 }

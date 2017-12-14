@@ -14,6 +14,8 @@ public class LotDTO {
 
     private int initialPrice;
 
+    private int currentPrice;
+
     private int lotQuantity;
 
     private int bidStep;
@@ -29,6 +31,7 @@ public class LotDTO {
         lotDTO.setId(lot.getId());
         lotDTO.setTitle(lot.getTitle());
         lotDTO.setInitialPrice(lot.getInitialPrice());
+        lotDTO.setCurrentPrice(lot.getCurrentPrice());
         lotDTO.setLotQuantity(lot.getLotQuantity());
         lotDTO.setBidStep(lot.getBidStep());
         lotDTO.setDescription(lot.getDescription());
@@ -107,5 +110,13 @@ public class LotDTO {
 
     public void setBids(List<BidDTO> bids) {
         this.bids = bids;
+    }
+
+    public int getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(int currentPrice) {
+        this.currentPrice = currentPrice;
     }
 }

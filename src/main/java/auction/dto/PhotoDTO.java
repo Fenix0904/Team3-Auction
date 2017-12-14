@@ -10,11 +10,11 @@ public class PhotoDTO {
 
     public static List<PhotoDTO> fromModel(List<Photo> photos) {
         List<PhotoDTO> photoDTOS = new ArrayList<>();
-        for (PhotoDTO photoDTO : photoDTOS) {
             for (Photo photo : photos) {
-                photoDTO.setUrl(photo.getUrl());
+                PhotoDTO temp = new PhotoDTO();
+                temp.setUrl(photo.getUrl());
+                photoDTOS.add(temp);
             }
-        }
         return photoDTOS;
     }
 

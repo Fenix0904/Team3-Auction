@@ -6,13 +6,11 @@ public class UserShortDTO {
     private int id;
     private String username;
     private User.Role role;
-    private String name;
 
     public static UserShortDTO fromMode(User user) {
         UserShortDTO userShortDTO = new UserShortDTO();
         userShortDTO.setId(user.getId());
         userShortDTO.setUsername(user.getUsername());
-        userShortDTO.setName(user.getName());
         userShortDTO.setRole(user.getRole());
         return userShortDTO;
     }
@@ -39,13 +37,5 @@ public class UserShortDTO {
 
     public void setRole(User.Role role) {
         this.role = role;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

@@ -1,6 +1,7 @@
 package auction.domain;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity(name = "bid")
@@ -21,7 +22,7 @@ public class Bid {
     private Lot lot;
 
     @Column(name = "bid_time")
-    private Date bidTime;
+    private ZonedDateTime bidTime;
 
     public int getId() { return id; }
 
@@ -37,25 +38,7 @@ public class Bid {
 
     public void setLot(Lot lot) { this.lot = lot; }
 
-    public Date getBidTime() { return bidTime; }
+    public ZonedDateTime getBidTime() { return bidTime; }
 
-    public void setBidTime(Date bidTime) { this.bidTime = bidTime; }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Bid bid = (Bid) o;
-
-        if (bidValue != bid.bidValue) return false;
-        return bidTime != null ? bidTime.equals(bid.bidTime) : bid.bidTime == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = bidValue;
-        result = 31 * result + (bidTime != null ? bidTime.hashCode() : 0);
-        return result;
-    }
+    public void setBidTime(ZonedDateTime bidTime) { this.bidTime = bidTime; }
 }

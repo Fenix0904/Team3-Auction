@@ -155,8 +155,8 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public List<Auction> getAuctionsByCustomParameters(ZonedDateTime date, Auction.Status firstStatus, Auction.Status secondStatus) {
-        List<Auction> auctions = auctionRepository.getAuctionsByTerminationDateIsBeforeAndAuctionStatusIsOrAuctionStatusIs(date, firstStatus, secondStatus);
+    public List<Auction> getAuctionsByCustomParameters(ZonedDateTime date, Auction.Status status) {
+        List<Auction> auctions = auctionRepository.getAuctionsByTerminationDateIsBeforeAndAuctionStatusIsNot(date, status);
         log.info("getAuctionsByCustomParameters executed");
         return auctions;
     }

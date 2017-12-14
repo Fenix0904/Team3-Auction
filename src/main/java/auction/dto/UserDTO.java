@@ -11,7 +11,6 @@ public class UserDTO {
     private int id;
     private String username;
     private User.Role role;
-    private String name;
     private List<BidDTO> bids;
     private List<AuctionShortDTO> auctions;
     private List<AuctionShortDTO> subscribedAuctions;
@@ -20,7 +19,6 @@ public class UserDTO {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
-        userDTO.setName(user.getName());
         userDTO.setRole(user.getRole());
         userDTO.setBids(BidDTO.fromModel(user.getBids()));
         userDTO.setSubscribedAuctions(AuctionShortDTO.fromModel(user.getSubscribedAuctions()));
@@ -58,14 +56,6 @@ public class UserDTO {
 
     public void setRole(User.Role role) {
         this.role = role;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<BidDTO> getBids() {

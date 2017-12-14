@@ -1,6 +1,7 @@
 package auction.service;
 
 import auction.domain.Auction;
+import auction.repository.BidRepository;
 import auction.utils.AuctionException;
 import auction.utils.LotException;
 import auction.domain.Bid;
@@ -21,6 +22,8 @@ public class BidServiceImpl implements BidService {
 
     @Autowired
     private LotRepository lotRepository;
+    @Autowired
+    private BidRepository bidRepository;
     private Lock lock = new ReentrantLock();
     private static final Logger log = LoggerFactory.getLogger(BidServiceImpl.class);
 
@@ -34,12 +37,11 @@ public class BidServiceImpl implements BidService {
                 throw new AuctionException(AUCTION_IS_CLOSED, currentLot.getAuction());
             if (currentLot.getCurrentPrice() != bid.getLot().getCurrentPrice())
                 throw new LotException(ANOTHER_CURRENT_PRICE, currentLot);
-            if (currentLot.getLotQuantity() == 0)
-                throw new LotException(NO_ITEM, currentLot);
-            currentLot.setCurrentPrice(currentLot.getCurrentPrice() + currentLot.getBidStep());
+            currentLot.setCurrentPrice(currentLot.getCurrentPrice() + bid.getBidValue());
         } finally {
             lock.unlock();
         }
+        bidRepository.save(bid);
         lotRepository.save(currentLot);
         log.info("makeBid method executed");
         return currentLot;
