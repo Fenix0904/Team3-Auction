@@ -1,5 +1,8 @@
 package auction.domain;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -33,9 +36,11 @@ public class Lot {
     private Auction auction;
 
     @OneToMany(mappedBy = "lot")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Photo> photos;
 
     @OneToMany(mappedBy = "lot")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Bid> bids;
 
     public int getId() { return id; }

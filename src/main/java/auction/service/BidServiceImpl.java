@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -29,21 +31,28 @@ public class BidServiceImpl implements BidService {
 
     @Override
     public Lot makeBid(Bid bid) throws LotException, AuctionException {
-        Lot currentLot = lotRepository.findOne(bid.getLot().getId());
         lock.lock();
-        // TODO synchronized (bid.getLot().getAuction())
+        Lot currentLot = lotRepository.findOne(bid.getLot().getId());
         try {
             if (currentLot.getAuction().getAuctionStatus() == Auction.Status.CLOSED)
                 throw new AuctionException(AUCTION_IS_CLOSED, currentLot.getAuction());
             if (currentLot.getCurrentPrice() != bid.getLot().getCurrentPrice())
                 throw new LotException(ANOTHER_CURRENT_PRICE, currentLot);
             currentLot.setCurrentPrice(currentLot.getCurrentPrice() + bid.getBidValue());
+            currentLot.getBids().add(bid);
         } finally {
             lock.unlock();
         }
-        bidRepository.save(bid);
         lotRepository.save(currentLot);
+        bidRepository.save(bid);
         log.info("makeBid method executed");
         return currentLot;
     }
+
+    @Override
+    public void deleteBids(List<Bid> bids) {
+        bidRepository.deleteInBatch(bids);
+    }
+
+
 }

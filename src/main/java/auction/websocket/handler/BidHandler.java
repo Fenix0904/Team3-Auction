@@ -34,11 +34,12 @@ public class BidHandler extends TextWebSocketHandler {
 
     private static final Logger log = LoggerFactory.getLogger(BidHandler.class);
 
-    // TODO (each update in new thread)
+    // TODO fix multiply make bid
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         Bid bid = mapper.readValue(message.getPayload(), Bid.class);
-        sessions.put(session, bid.getLot().getAuction().getId());
+        if (!sessions.containsKey(session))
+            sessions.put(session, bid.getLot().getAuction().getId());
         try {
             Lot lot = bidService.makeBid(bid);
             for (Map.Entry<WebSocketSession, Integer> entry : sessions.entrySet()) {
@@ -47,10 +48,10 @@ public class BidHandler extends TextWebSocketHandler {
                 }
             }
         } catch (LotException e) {
-            log.warn("LotException " +e.getErrorCode()+ " caused in handleTextMessage method");
+            log.warn("LotException " + e.getErrorCode() + " caused in handleTextMessage method");
             if (e.getErrorCode() == ANOTHER_CURRENT_PRICE) {
                 session.sendMessage(new BinaryMessage("Lot price has been changed!".getBytes()));
-                session.sendMessage(new TextMessage(mapper.writeValueAsString(e.getLot())));
+                session.sendMessage(new TextMessage(mapper.writeValueAsString(LotDTO.fromModel(e.getLot()))));
             }
         } catch (AuctionException e) {
             log.info("hanleTextMessage method executed");

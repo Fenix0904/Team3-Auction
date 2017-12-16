@@ -28,16 +28,10 @@ public class LotController {
         lotService.createLot(lot);
     }
 
-    @PutMapping(value = "/update")
+    @DeleteMapping(value = "/delete")
     @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    public void updateLot(@RequestBody Lot lot) {
-        lotService.updateLot(lot);
-    }
-
-    @DeleteMapping(value = "/delete/{lotId}")
-    @PreAuthorize(value = "hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    public ResponseEntity deleteLot(@PathVariable int lotId) {
-        boolean result = lotService.deleteLot(lotId);
+    public ResponseEntity deleteLot(@RequestBody Lot lot) {
+        boolean result = lotService.deleteLot(lot);
         if (result) return new ResponseEntity(HttpStatus.OK);
         else return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body("You haven't rights to delete this lot!");

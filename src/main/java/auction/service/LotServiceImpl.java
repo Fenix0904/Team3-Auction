@@ -23,6 +23,8 @@ public class LotServiceImpl implements LotService {
     private final LotRepository lotRepository;
     private final UserRepository userRepository;
     private final PhotoService photoService;
+    @Autowired
+    private BidService bidService;
     private static final Logger log = LoggerFactory.getLogger(LotServiceImpl.class);
 
 
@@ -41,17 +43,7 @@ public class LotServiceImpl implements LotService {
     }
 
     @Override
-    public void createLots(List<Lot> lots,  Auction auction) {
-        for (Lot lot : lots) {
-            lot.setAuction(auction);
-        }
-        lotRepository.save(lots);
-        log.info("createLots method executed");
-    }
-
-
-    @Override
-    public void updateLot(Lot lot) {
+    public void updateLot(List<Lot> lot) {
         lotRepository.save(lot);
         log.info("updateLot method executed");
     }
@@ -60,25 +52,26 @@ public class LotServiceImpl implements LotService {
      * Only Admin have rights to delete any lot.
      * Trader (User) can delete only lot than belongs to auction he created.
      *
-     * @param lotId - identifier of lot.
      * @return true if user have rights to delete lot, else - false.
      */
     @Override
-    public boolean deleteLot(int lotId) {
+    public boolean deleteLot(Lot lot) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         for (GrantedAuthority authority : auth.getAuthorities()) {
             if (authority.getAuthority().equals("ROLE_ADMIN")) {
-                lotRepository.delete(lotId);
+                bidService.deleteBids(lot.getBids());
+                lotRepository.delete(lot);
                 return true;
             }
         }
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
         User user = userRepository.findByUsername(userDetails.getUsername());
         for (Auction tempAuction : user.getAuctions()) {
-            for (Lot lot : tempAuction.getLots()) {
-                if (lotId == lot.getId()) {
-                    lotRepository.delete(lotId);
+            for (Lot item : tempAuction.getLots()) {
+                if (lot.getId() == item.getId()) {
+                    bidService.deleteBids(lot.getBids());
+                    lotRepository.delete(lot);
                     return true;
                 }
             }
@@ -89,6 +82,9 @@ public class LotServiceImpl implements LotService {
 
     @Override
     public void deleteLot(List<Lot> lots) {
+        for (Lot lot : lots) {
+            bidService.deleteBids(lot.getBids());
+        }
         lotRepository.delete(lots);
         log.info("deleteLot method executed");
 

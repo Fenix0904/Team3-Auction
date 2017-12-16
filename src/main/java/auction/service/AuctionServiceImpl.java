@@ -8,6 +8,8 @@ import auction.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,25 +22,26 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service
 public class AuctionServiceImpl implements AuctionService {
 
+    // Map<Integer, Integer> represents Map<Auction id, Auction hashCode>
+    private Map<Integer, Integer> cache = new ConcurrentHashMap<>();
+    @Autowired
+    private AuctionRepository auctionRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private LotService lotService;
 
-    private final AuctionRepository auctionRepository;
-    private final UserRepository userRepository;
-
-    private final LotService lotService;
     private static final Logger log = LoggerFactory.getLogger(AuctionServiceImpl.class);
 
-    @Autowired
-    public AuctionServiceImpl(AuctionRepository auctionRepository,
-                              UserRepository userRepository,
-                              LotService lotService) {
-        this.auctionRepository = auctionRepository;
-        this.userRepository = userRepository;
-        this.lotService = lotService;
+    public AuctionServiceImpl() {
+
     }
 
     @Override
@@ -57,19 +60,37 @@ public class AuctionServiceImpl implements AuctionService {
             lot.setAuction(result);
             lotService.createLot(lot);
         }
+        cache.put(result.getId(), result.hashCode());
         log.info("createAuction method executed");
     }
 
     @Override
     public void updateAuction(Auction auction) {
-        auctionRepository.save(auction);
+        Auction storedAuction = auctionRepository.findOne(auction.getId());
+        Auction result;
+        if (storedAuction.getLots().size() == auction.getLots().size()) {
+            lotService.updateLot(auction.getLots());
+            result = auctionRepository.save(auction);
+        }
+        else {
+            for (Lot lot : storedAuction.getLots()) {
+                if (!auction.getLots().contains(lot))
+                    lotService.deleteLot(lot);
+            }
+            lotService.updateLot(auction.getLots());
+            result = auctionRepository.save(auction);
+        }
+        cache.put(result.getId(), result.hashCode());
         log.info("updateAuction method executed");
-
     }
 
     @Override
     public void updateAuctions(List<Auction> auctions) {
-        auctionRepository.save(auctions);
+        List<Auction> result = auctionRepository.save(auctions);
+        for (Auction auction : result) {
+            if (cache.containsKey(auction.getId()))
+                cache.put(auction.getId(), auction.hashCode());
+        }
         log.info("updateAuctions method executed");
     }
 
@@ -148,16 +169,31 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public List<Auction> getAuctionsByCustomParameters(ZonedDateTime dateFist, ZonedDateTime dateSecond, Auction.Status auctionStatus) {
-        List<Auction> auctions = auctionRepository.getAuctionsByStartDateIsBeforeAndTerminationDateIsAfterAndAuctionStatusIs(dateFist, dateSecond, auctionStatus);
+    public List<Auction> getAuctionsByCustomParameters(ZonedDateTime dateFist,
+                                                       ZonedDateTime dateSecond,
+                                                       Auction.Status auctionStatus) {
+        List<Auction> auctions = auctionRepository
+                .getAuctionsByStartDateIsBeforeAndTerminationDateIsAfterAndAuctionStatusIs
+                        (dateFist,
+                                dateSecond,
+                                auctionStatus);
         log.info("getAuctionsByCustomParameters executed");
         return auctions;
     }
 
     @Override
     public List<Auction> getAuctionsByCustomParameters(ZonedDateTime date, Auction.Status status) {
-        List<Auction> auctions = auctionRepository.getAuctionsByTerminationDateIsBeforeAndAuctionStatusIsNot(date, status);
+        List<Auction> auctions = auctionRepository
+                .getAuctionsByTerminationDateIsBeforeAndAuctionStatusIsNot(date, status);
         log.info("getAuctionsByCustomParameters executed");
         return auctions;
+    }
+
+    @EventListener
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        List<Auction> auctions = auctionRepository.getAuctionsByAuctionStatusIsNot(Auction.Status.CLOSED);
+        for (Auction auction : auctions) {
+            cache.put(auction.getId(), auction.hashCode());
+        }
     }
 }
